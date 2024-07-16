@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-gray-800 px-16 py-20 rounded-lg shadow-lg w-full max-w-md drop-shadow-xl">
+    <div class="bg-login-card px-16 py-20 rounded-xl shadow-lg w-full max-w-md drop-shadow-xl">
       <h2 class="text-white text-2xl font-bold mb-6 text-center">SELAMAT DATANG</h2>
       <p class="text-white text-sm text-center mb-8">Silahkan login terlebih dahulu</p>
       <form @submit.prevent="login">
