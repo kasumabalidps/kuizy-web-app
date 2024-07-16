@@ -1,5 +1,8 @@
 <template>
-    <div>
-        <h1>Dashboard</h1>
+    <div class="bg-gray-900">
+        <div id="app">
+      <Sidebar />
+         </div>
     </div>
-</template>
+  </template>
+  
