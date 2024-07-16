@@ -6,8 +6,8 @@
         {{ errorMessage }}
       </div>
     </transition>
-    <h2 class="text-white text-xl sm:text-2xl font-bold mb-2">SELAMAT DATANG</h2>
-    <p class="text-white text-xs sm:text-sm pb-12">Silahkan Pengajar login terlebih dahulu</p>
+    <h2 class="text-white text-xl sm:text-3xl font-bold mb-2">SELAMAT DATANG</h2>
+    <p class="text-white text-md sm:text-md pb-12">Silahkan Pengajar login terlebih dahulu</p>
     <form @submit.prevent="login" class="mt-8">
       <div class="mb-6">
         <input type="text" v-model="username" placeholder="Username" class="w-full p-3 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
