@@ -1,5 +1,12 @@
 <template>
-  <div class="bg-login-card px-6 py-20 rounded-xl shadow-lg w-full max-w-md drop-shadow-xl">
+  <div class="bg-login-card px-6 py-20 rounded-xl shadow-lg w-full max-w-md drop-shadow-xl relative">
+    <!-- Popup Error dengan animasi dan timeout -->
+    <transition name="fade">
+      <div v-if="errorMessage" class="absolute top-0 left-0 right-0 bg-red-500 text-white text-center py-2" style="margin-top: -3rem;">
+        {{ errorMessage }}
+      </div>
+    </transition>
+
     <h2 class="text-white text-xl sm:text-2xl font-bold mb-6 text-center">SELAMAT DATANG</h2>
     <p class="text-white text-xs sm:text-sm text-center mb-8">Silahkan login terlebih dahulu</p>
     <form @submit.prevent="login">
@@ -22,12 +29,14 @@ export default {
   data() {
     return {
       username: '',
-      password: ''
+      password: '',
+      errorMessage: ''
     }
   },
   methods: {
     async login() {
-      const userRef = ref(database, 'users/' + this.username);
+      const sanitizedUsername = this.username.replace(/[.#$[\]]/g, '');
+      const userRef = ref(database, 'users/' + sanitizedUsername);
       try {
         const snapshot = await get(userRef);
         if (snapshot.exists()) {
@@ -36,16 +45,31 @@ export default {
             console.log('Login successful:', this.username);
             this.$router.push('/dashboard');
           } else {
-            alert('Incorrect password.');
+            this.setErrorMessage('Incorrect password.');
           }
         } else {
-          alert('Username does not exist.');
+          this.setErrorMessage('Username does not exist.');
         }
       } catch (error) {
         console.error('Error when logging in:', error);
-        alert('Login failed.');
+        this.setErrorMessage('Login failed.');
       }
+    },
+    setErrorMessage(msg) {
+      this.errorMessage = msg;
+      setTimeout(() => {
+        this.errorMessage = '';
+      }, 3000);
     }
   }
 }
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to{
+  opacity: 0;
+}
+</style>
