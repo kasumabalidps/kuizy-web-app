@@ -10,6 +10,7 @@
         <input type="password" v-model="password" placeholder="Password" class="w-full p-3 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
       </div>
       <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline">Masuk</button>
+      <UButton label="Button" />
     </form>
   </div>
 </template>
