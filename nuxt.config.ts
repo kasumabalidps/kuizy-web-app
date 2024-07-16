@@ -9,6 +9,8 @@ export default defineNuxtConfig({
         extend: {
           colors: {
             'login-card': '#1E293B',
+            'button-custom': '#164E63',
+            'button-hover': '#133e4e'
           }
         }
       }
