@@ -57,13 +57,15 @@ export default {
       }
     },
     generateToken() {
+      let token;
       if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
         let array = new Uint8Array(16);
         crypto.getRandomValues(array);
-        return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+        token = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
       } else {
-        return 'fallback-token-' + Date.now();
+        token = 'fallback-token-' + Date.now();
       }
+      return 'kuizy' + token;
     },
     storeToken(token) {
       if (typeof window !== 'undefined') {
