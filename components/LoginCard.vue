@@ -41,24 +41,80 @@ export default {
         if (snapshot.exists()) {
           const userData = snapshot.val();
           if (userData.password === this.password) {
-            console.log('Login successful:', this.username);
-            this.$router.push('/dashboard');
+            if (userData.token && this.checkAndHandleToken(userData.token)) {
+              console.log('Successfully logged in with existing token:', this.username);
+              this.$router.push('/dashboard');
+            } else {
+              const newToken = this.generateToken();
+              await this.updateDatabaseToken(sanitizedUsername, newToken);
+              console.log('Successfully logged in with new token:', this.username);
+              this.$router.push('/dashboard');
+            }
           } else {
-            this.setErrorMessage('Incorrect password.');
+            this.setErrorMessage('Incorrect username or password!');
           }
         } else {
-          this.setErrorMessage('Username does not exist.');
+          this.setErrorMessage('Incorrect username or password!');
         }
       } catch (error) {
-        console.error('Error when logging in:', error);
-        this.setErrorMessage('Login failed.');
+        this.setErrorMessage('Login failed');
       }
     },
-    setErrorMessage(msg) {
-      this.errorMessage = msg;
+    generateToken() {
+      if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+        let array = new Uint8Array(16);
+        crypto.getRandomValues(array);
+        return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+      } else {
+        return 'fallback-token-' + Date.now();
+      }
+    },
+    updateDatabaseToken(username, token) {
+      const userRef = ref(database, 'users/' + username);
+      return update(userRef, { token });
+    },
+    setErrorMessage(message) {
+      this.errorMessage = message;
       setTimeout(() => {
         this.errorMessage = '';
       }, 3000);
+    },
+    checkAndHandleToken(token) {
+      const localToken = this.getTokenFromLocalStorage();
+      if (localToken && token === localToken) {
+        return true;
+      } else if (localToken) {
+        this.storeToken(token);
+        return false;
+      }
+      return false;
+    }
+  },
+  mounted() {
+    const localToken = this.getTokenFromLocalStorage();
+    if (localToken) {
+      const usersRef = ref(database, 'users/');
+      get(usersRef).then(snapshot => {
+        if (snapshot.exists()) {
+          const users = snapshot.val();
+          const user = Object.values(users).find(user => user.token === localToken);
+          if (user) {
+            this.$router.push('/dashboard');
+          } else {
+            window.localStorage.removeItem('authToken');
+          }
+        }
+      });
+    }
+  },
+  methods: {
+    getTokenFromLocalStorage() {
+      return typeof window !== 'undefined' ? window.localStorage.getItem('authToken') : null;
+    },
+    storeToken(token) {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('authToken', token);
+      }
     }
   }
 }
