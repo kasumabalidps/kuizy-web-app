@@ -7,8 +7,8 @@
         </div>
         <hr class="border-gray-300">
       </header>
-      <main class="flex-grow bg-gray-900 p-6 rounded-lg shadow-lg">
-      <div class="overflow-x-auto relative rounded-md">
+      <main class="flex-grow bg-gray-900 p-6 shadow-lg">
+      <div class="overflow-x-auto relative rounded-xl drop-shadow-md">
         <table class="w-full text-sm text-left text-gray-400 ">
           <thead class="text-xs text-white uppercase bg-gray-800">
             <tr>
