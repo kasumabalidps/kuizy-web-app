@@ -2,7 +2,7 @@
   <div class="flex flex-col w-full p-6">
     <header class="mb-4 pt-4">
       <div class="flex justify-between items-center mb-2">
-        <h2 class="text-2xl text-white italic">Hello, User</h2>
+        <span class="font-semibold text-2xl text-white">Hello, <span class="font-light italic">User</span></span>
         <span class="text-white">{{ currentDate }}</span>
       </div>
       <hr class="border-gray-300">
