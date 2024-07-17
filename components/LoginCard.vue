@@ -8,7 +8,7 @@
     </transition>
     <h2 class="text-white text-xl sm:text-3xl font-bold mb-2">SELAMAT DATANG</h2>
     <p class="text-white text-md sm:text-md pb-12">Silahkan Pengajar login terlebih dahulu</p>
-    <form @submit.prevent="login" class="mt-8">
+    <form @submit.prevent="login">
       <div class="mb-6">
         <input type="text" v-model="username" placeholder="Username" class="w-full p-3 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
       </div>
@@ -22,7 +22,7 @@
 
 <script>
 import { database } from '../firebaseConfig.js';
-import { ref, get } from "firebase/database";
+import { ref, get, update } from "firebase/database";
 
 export default {
   data() {
@@ -41,15 +41,10 @@ export default {
         if (snapshot.exists()) {
           const userData = snapshot.val();
           if (userData.password === this.password) {
-            if (userData.token && this.checkAndHandleToken(userData.token)) {
-              console.log('Successfully logged in with existing token:', this.username);
-              this.$router.push('/dashboard');
-            } else {
-              const newToken = this.generateToken();
-              await this.updateDatabaseToken(sanitizedUsername, newToken);
-              console.log('Successfully logged in with new token:', this.username);
-              this.$router.push('/dashboard');
-            }
+            const newToken = this.generateToken();
+            await update(userRef, { token: newToken });
+            this.storeToken(newToken);
+            this.$router.push('/dashboard');
           } else {
             this.setErrorMessage('Incorrect username or password!');
           }
@@ -69,9 +64,10 @@ export default {
         return 'fallback-token-' + Date.now();
       }
     },
-    updateDatabaseToken(username, token) {
-      const userRef = ref(database, 'users/' + username);
-      return update(userRef, { token });
+    storeToken(token) {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('authToken', token);
+      }
     },
     setErrorMessage(message) {
       this.errorMessage = message;
@@ -79,22 +75,11 @@ export default {
         this.errorMessage = '';
       }, 3000);
     },
-    checkAndHandleToken(token) {
+    async checkInitialToken() {
       const localToken = this.getTokenFromLocalStorage();
-      if (localToken && token === localToken) {
-        return true;
-      } else if (localToken) {
-        this.storeToken(token);
-        return false;
-      }
-      return false;
-    }
-  },
-  mounted() {
-    const localToken = this.getTokenFromLocalStorage();
-    if (localToken) {
-      const usersRef = ref(database, 'users/');
-      get(usersRef).then(snapshot => {
+      if (localToken) {
+        const usersRef = ref(database, 'users/');
+        const snapshot = await get(usersRef);
         if (snapshot.exists()) {
           const users = snapshot.val();
           const user = Object.values(users).find(user => user.token === localToken);
@@ -104,18 +89,14 @@ export default {
             window.localStorage.removeItem('authToken');
           }
         }
-      });
-    }
-  },
-  methods: {
+      }
+    },
     getTokenFromLocalStorage() {
       return typeof window !== 'undefined' ? window.localStorage.getItem('authToken') : null;
-    },
-    storeToken(token) {
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem('authToken', token);
-      }
     }
+  },
+  mounted() {
+    this.checkInitialToken();
   }
 }
 </script>
