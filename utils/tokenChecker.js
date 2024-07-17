@@ -1,4 +1,4 @@
-import { database } from '../firebaseConfig.js';
+import { database } from './firebaseConfig.js';
 import { ref, get } from 'firebase/database';
 
 export async function getUsernameFromToken() {

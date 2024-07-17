@@ -21,9 +21,9 @@
 </template>
 
 <script>
-import { database } from '../firebaseConfig.js';
+import { database } from '../utils/firebaseConfig.js';
 import { ref, get, update } from "firebase/database";
-import { getUsernameFromToken } from '../tokenChecker.js';
+import { getUsernameFromToken } from '../utils/tokenChecker.js';
 
 export default {
   data() {
@@ -82,6 +82,7 @@ export default {
     if (username) {
       this.username = username;
       this.$router.push('/dashboard');
+      console.log("Berhasil Login:", this.username)
     }
   }
 }
