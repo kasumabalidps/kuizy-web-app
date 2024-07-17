@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen bg-gray-100">
+  <div class="flex min-h-screen bg-gray-900">
     <div class="bg-gray-800 text-white w-64 p-6 flex flex-col rounded-r-lg shadow-lg">
 
       <h1 class="text-2xl font-bold mb-6 text-center mt-0 flex items-center">
@@ -29,8 +29,8 @@
           
           <li class="mb-2">
             <a href="#total-user" class="block py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold">
-              <img src="/assets/totalUser.png" alt="Total User Icon" class="ml-2 h-4 w-4">
-              <span class="ml-2 font-bold">Total User</span>
+              <img src="/assets/halamanUser.png" alt="Total User Icon" class="ml-2 h-4 w-4">
+              <span class="ml-2 font-bold">Halaman User</span>
             </a>
           </li>
         </ul>
