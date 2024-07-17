@@ -23,6 +23,7 @@
 <script>
 import { database } from '../firebaseConfig.js';
 import { ref, get, update } from "firebase/database";
+import { getUsernameFromToken } from '../tokenChecker.js';
 
 export default {
   data() {
@@ -42,7 +43,7 @@ export default {
           const userData = snapshot.val();
           if (userData.password === this.password) {
             const newToken = this.generateToken();
-            await update(userRef, { token: newToken });
+            await update(userRef, { token: newToken, username: sanitizedUsername });
             this.storeToken(newToken);
             this.$router.push('/dashboard');
           } else {
@@ -74,29 +75,14 @@ export default {
       setTimeout(() => {
         this.errorMessage = '';
       }, 3000);
-    },
-    async checkInitialToken() {
-      const localToken = this.getTokenFromLocalStorage();
-      if (localToken) {
-        const usersRef = ref(database, 'users/');
-        const snapshot = await get(usersRef);
-        if (snapshot.exists()) {
-          const users = snapshot.val();
-          const user = Object.values(users).find(user => user.token === localToken);
-          if (user) {
-            this.$router.push('/dashboard');
-          } else {
-            window.localStorage.removeItem('authToken');
-          }
-        }
-      }
-    },
-    getTokenFromLocalStorage() {
-      return typeof window !== 'undefined' ? window.localStorage.getItem('authToken') : null;
     }
   },
-  mounted() {
-    this.checkInitialToken();
+  async mounted() {
+    const username = await getUsernameFromToken();
+    if (username) {
+      this.username = username;
+      this.$router.push('/dashboard');
+    }
   }
 }
 </script>
