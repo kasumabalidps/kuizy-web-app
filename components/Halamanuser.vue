@@ -21,16 +21,40 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="bg-gray-800 border-b border-gray-800" v-for="user in users" :key="user.username">
-              <td class="py-4 px-6">{{ user.username }}</td>
-              <td class="py-4 px-6">{{ user.point }}</td>
-              <td class="py-4 px-6">{{ user.level }}</td>
-              <td class="py-4 px-6">{{ user.total_soal }}</td>
-              <td class="py-4 px-6">{{ user.xp }}</td>
-              <td class="py-4 px-6">{{ user.latestDate }}</td>
-            </tr>
+            <template v-if="loading">
+              <tr class="animate-pulse">
+                <td colspan="6" class="py-4 px-6 bg-gray-700 text-center">Loading...</td>
+              </tr>
+            </template>
+            <template v-else>
+              <tr v-for="user in paginatedUsers" :key="user.username" class="bg-gray-800 border-b border-gray-800">
+                <td class="py-4 px-6">{{ user.username }}</td>
+                <td class="py-4 px-6">{{ user.point }}</td>
+                <td class="py-4 px-6">{{ user.level }}</td>
+                <td class="py-4 px-6">{{ user.total_soal }}</td>
+                <td class="py-4 px-6">{{ user.xp }}</td>
+                <td class="py-4 px-6">{{ user.latestDate }}</td>
+              </tr>
+            </template>
           </tbody>
         </table>
+      </div>
+      <div class="pagination mt-4 flex justify-center">
+        <button
+          v-if="currentPage > 1"
+          @click="currentPage--"
+          class="mx-1 px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+        >
+          Previous
+        </button>
+        <span class="text-white mx-2">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button
+          v-if="currentPage < totalPages"
+          @click="currentPage++"
+          class="mx-1 px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+        >
+          Next
+        </button>
       </div>
     </main>
   </div>
@@ -44,8 +68,19 @@ export default {
   data() {
     return {
       currentDate: '',
-      users: []
+      users: [],
+      loading: true,
+      currentPage: 1,
+      pageSize: 10,
+      totalPages: 0
     };
+  },
+  computed: {
+    paginatedUsers() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.users.slice(start, end);
+    }
   },
   methods: {
     getCurrentDate() {
@@ -54,6 +89,7 @@ export default {
       this.currentDate = date.toLocaleDateString('id-ID', options);
     },
     fetchUsers() {
+      this.loading = true;
       const usersRef = ref(database, 'users');
       get(usersRef).then(snapshot => {
         if (snapshot.exists()) {
@@ -66,9 +102,16 @@ export default {
             xp: user.xp,
             latestDate: user.quiz_history[user.quiz_history.length - 1]?.tanggal || 'N/A'
           }));
+          this.totalPages = Math.ceil(this.users.length / this.pageSize);
+          setTimeout(() => {
+            this.loading = false;
+          }, 2000); 
+        } else {
+          this.loading = false;
         }
       }).catch(error => {
         console.error('Error fetching user data:', error);
+        this.loading = false;
       });
     }
   },
@@ -78,3 +121,4 @@ export default {
   }
 };
 </script>
+
