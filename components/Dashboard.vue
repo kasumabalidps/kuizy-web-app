@@ -25,6 +25,7 @@
       </div>
       <!-- Table -->
       <div class="overflow-x-auto relative rounded-xl drop-shadow-md mt-8">
+        <h3 class="text-white text-2xl font-bold mb-4">Aktivitas Terakhir</h3>
         <table class="w-full text-sm text-left text-gray-400">
           <thead class="text-xs text-white uppercase bg-gray-800">
             <tr>
