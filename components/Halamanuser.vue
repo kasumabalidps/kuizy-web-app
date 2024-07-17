@@ -108,7 +108,7 @@ export default {
           this.totalPages = Math.ceil(this.users.length / this.pageSize);
           setTimeout(() => {
             this.loading = false;
-          }, 2000); 
+          }, 1000); 
         } else {
           this.loading = false;
         }
