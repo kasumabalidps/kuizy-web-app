@@ -7,7 +7,7 @@
       </div>
     </transition>
     <h2 class="text-white text-xl sm:text-3xl font-bold mb-2">SELAMAT DATANG</h2>
-    <p class="text-white text-md sm:text-md pb-12">Silahkan Pengajar login terlebih dahulu</p>
+    <p class="text-white text-md sm:text-md pb-12 font-extralight">Silahkan Pengajar login terlebih dahulu</p>
     <form @submit.prevent="login">
       <div class="mb-6">
         <input type="text" v-model="username" placeholder="Username" class="w-full p-3 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -45,7 +45,7 @@ export default {
             const newToken = this.generateToken();
             await update(userRef, { token: newToken, username: sanitizedUsername });
             this.storeToken(newToken);
-            this.$router.push('/dashboard');
+            this.$router.push('/dashboard');  
           } else {
             this.setErrorMessage('Incorrect username or password!');
           }
