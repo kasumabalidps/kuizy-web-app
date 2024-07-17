@@ -1,8 +1,8 @@
 <template>
   <div class="bg-login-card px-6 py-20 rounded-xl shadow-lg w-full max-w-md drop-shadow-xl relative text-center">
-    <!-- alert -->
+    <!-- alert bang -->
     <transition name="fade">
-      <div v-if="errorMessage" class="absolute top-0 left-0 right-0 bg-red-500 text-white text-center py-2" style="margin-top: -3rem;">
+      <div v-if="errorMessage" class="absolute top-0 left-0 right-0 shadow-lg rounded-md bg-red-500 text-white text-center py-2" style="margin-top: -3rem;">
         {{ errorMessage }}
       </div>
     </transition>
@@ -65,10 +65,10 @@ export default {
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter, .fade-leave-to {
-  opacity: 0;
-}
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity 0.5s;
+  }
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
+  }
 </style>
