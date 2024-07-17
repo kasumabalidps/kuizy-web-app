@@ -18,6 +18,7 @@
               <th scope="col" class="py-3 px-6">Soal Selesai</th>
               <th scope="col" class="py-3 px-6">XP</th>
               <th scope="col" class="py-3 px-6">Tanggal History Terakhir</th>
+              <th scope="col" class="py-3 px-6">Quiz Terakhir</th>
             </tr>
           </thead>
           <tbody>
@@ -34,6 +35,7 @@
                 <td class="py-4 px-6">{{ user.total_soal }}</td>
                 <td class="py-4 px-6">{{ user.xp }}</td>
                 <td class="py-4 px-6">{{ user.latestDate }}</td>
+                <td class="py-4 px-6">{{ user.lastquiz }}</td>
               </tr>
             </template>
           </tbody>
@@ -100,7 +102,8 @@ export default {
             point: user.point,
             total_soal: user.total_soal,
             xp: user.xp,
-            latestDate: user.quiz_history[user.quiz_history.length - 1]?.tanggal || 'N/A'
+            latestDate: user.quiz_history[user.quiz_history.length - 1]?.tanggal || 'N/A',
+            lastquiz: user.quiz_history[user.quiz_history.length - 1]?.name,
           }));
           this.totalPages = Math.ceil(this.users.length / this.pageSize);
           setTimeout(() => {
