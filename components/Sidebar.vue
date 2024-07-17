@@ -51,6 +51,6 @@ export default {
 
 <style scoped>
 .active {
-  background-color: gray-700;
+  background-color: gray-700; 
 }
 </style>
