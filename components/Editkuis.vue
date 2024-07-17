@@ -2,7 +2,7 @@
     <div class="flex flex-col w-full p-6">
       <header class="mb-4 pt-4">
         <div class="flex justify-between items-center mb-2">
-          <h2 class="text-2xl font-bold text-white">EDIT KUIS</h2>
+          <h2 class="text-2xl font-bold text-white">Edit Quiz</h2>
           <span class="text-white">{{ currentDate }}</span>
         </div>
         <hr class="border-gray-300">
