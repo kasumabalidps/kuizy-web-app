@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/fonts": "^0.7.1",
     "@nuxtjs/tailwindcss": "^6.12.1",
     "firebase": "^10.12.3",
     "nuxt": "^3.12.3",
