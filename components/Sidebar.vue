@@ -7,41 +7,48 @@
         KUIZY
       </h1>
 
-      
       <div class="flex flex-col items-start mb-6 mt-6">
-        
         <p class="text-xs text-gray-400 mb-2 ml-2 font-bold">Halaman</p>
         <ul class="mb-6 w-full">
-          
           <li class="mb-2">
-            <a href="#dashboard" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-600">
+            <nuxt-link to="/" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-600 font-bold">
               <img src="/assets/dashboard.png" alt="Dashboard Icon" class="ml-2 h-4 w-4">
               <span class="ml-2 font-bold">Dashboard</span>
-            </a>
+            </nuxt-link>
           </li>
           
           <li class="mb-2">
-            <a href="#edit-quiz" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold">
+            <nuxt-link to="/editKuis" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold">
               <img src="/assets/editKuis.png" alt="Edit Kuis Icon" class="ml-2 h-4 w-4">
               <span class="ml-2 font-bold">Edit Kuis</span>
-            </a>
+            </nuxt-link>
           </li>
           
           <li class="mb-2">
-            <a href="#total-user" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold">
-              <img src="/assets/halamanUser.png" alt="Total User Icon" class="ml-2 h-4 w-4">
+            <nuxt-link to="/halamanUser" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold">
+              <img src="/assets/halamanUser.png" alt="Halaman User Icon" class="ml-2 h-4 w-4">
               <span class="ml-2 font-bold">Halaman User</span>
-            </a>
+            </nuxt-link>
           </li>
         </ul>
       </div>
 
       <div class="mt-auto">
-        <button class="py-2 px-4 roundedrounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold">
+        <button class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold">
           <img src="/assets/logout.png" alt="Logout Icon" class="ml-2 h-4 w-4">
-              <span class="ml-2 font-bold">Logout</span>
+          <span class="ml-2 font-bold">Logout</span>
         </button>
       </div>
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  name: 'Sidebar'
+}
+</script>
+
+<style scoped>
+/* Tambahkan gaya tambahan jika diperlukan */
+</style>
