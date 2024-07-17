@@ -11,21 +11,21 @@
         <p class="text-xs text-gray-400 mb-2 ml-2 font-bold">Halaman</p>
         <ul class="mb-6 w-full">
           <li class="mb-2">
-            <nuxt-link to="/" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-600 font-bold">
+            <nuxt-link to="/dashboard" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-600 font-bold" :class="{ active: $route.path === '/dashboard' }">
               <img src="/assets/dashboard.png" alt="Dashboard Icon" class="ml-2 h-4 w-4">
               <span class="ml-2 font-bold">Dashboard</span>
             </nuxt-link>
           </li>
-          
+
           <li class="mb-2">
-            <nuxt-link to="/editKuis" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold">
+            <nuxt-link to="/editKuis" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold" :class="{ active: $route.path === '/editKuis' }">
               <img src="/assets/editKuis.png" alt="Edit Kuis Icon" class="ml-2 h-4 w-4">
               <span class="ml-2 font-bold">Edit Kuis</span>
             </nuxt-link>
           </li>
-          
+
           <li class="mb-2">
-            <nuxt-link to="/halamanUser" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold">
+            <nuxt-link to="/halamanUser" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold" :class="{ active: $route.path === '/halamanUser' }">
               <img src="/assets/halamanUser.png" alt="Halaman User Icon" class="ml-2 h-4 w-4">
               <span class="ml-2 font-bold">Halaman User</span>
             </nuxt-link>
@@ -50,5 +50,7 @@ export default {
 </script>
 
 <style scoped>
-/* Tambahkan gaya tambahan jika diperlukan */
+.active {
+  background-color: gray-700;
+}
 </style>
