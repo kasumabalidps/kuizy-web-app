@@ -24,7 +24,7 @@
           <tbody>
             <template v-if="loading">
               <tr class="animate-pulse">
-                <td colspan="6" class="py-4 px-6 bg-gray-700 text-center">Loading...</td>
+                <td colspan="7" class="py-4 px-6 bg-gray-700 text-center">Ditunggu ya mas...</td>
               </tr>
             </template>
             <template v-else>
