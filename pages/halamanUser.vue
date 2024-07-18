@@ -76,6 +76,7 @@ export default {
       currentDate: '',
       users: [],
       loading: true,
+      username: 'User',
       currentPage: 1,
       pageSize: 10,
       totalPages: 0
@@ -89,6 +90,14 @@ export default {
     }
   },
   methods: {
+    async checkUserLogin() {
+      const username = await getUsernameFromToken();
+      if (username) {
+        this.username = username;
+      } else {
+        this.$router.push('/');
+      }
+    },
     getCurrentDate() {
       const date = new Date();
       const options = { year: 'numeric', month: 'long', day: 'numeric' };

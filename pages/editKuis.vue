@@ -82,6 +82,7 @@ export default {
     return {
       currentDate: '',
       isModalOpen: false,
+      username: 'User',
       currentQuiz: '', 
       dropdownOpen: -1, 
       quizzes: [
@@ -94,6 +95,14 @@ export default {
     };
   },
   methods: {
+    async checkUserLogin() {
+      const username = await getUsernameFromToken();
+      if (username) {
+        this.username = username;
+      } else {
+        this.$router.push('/');
+      }
+    },
     getCurrentDate() {
       const date = new Date();
       const options = {

@@ -5,7 +5,7 @@
     <div class="flex flex-col w-full p-6">
       <header class="mb-4 pt-4">
         <div class="flex justify-between items-center mb-2">
-          <span class="font-semibold text-2xl text-white">Hello, <span class="font-light italic">User</span></span>
+          <span class="font-semibold text-2xl text-white">Hello, <span class="font-light italic">{{ username }}</span></span>
           <span class="text-white">{{ currentDate }}</span>
         </div>
         <hr class="border-gray-300">
@@ -64,17 +64,27 @@
 <script>
 import { database } from '../utils/firebaseConfig';
 import { ref, get } from 'firebase/database';
+import { getUsernameFromToken } from '../utils/tokenChecker';
 
 export default {
   data() {
     return {
       currentDate: '',
+      username: 'User',
       users: [],
       recentActivities: [],
       loading: true
     };
   },
   methods: {
+    async checkUserLogin() {
+      const username = await getUsernameFromToken();
+      if (username) {
+        this.username = username;
+      } else {
+        this.$router.push('/');
+      }
+    },
     getCurrentDate() {
       const date = new Date();
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -116,6 +126,7 @@ export default {
   mounted() {
     this.getCurrentDate();
     this.fetchUsers();
+    this.checkUserLogin();
   }
 };
 </script>
