@@ -47,7 +47,7 @@
           <div class="bg-gray-800 rounded-lg p-6 w-1/2">
             <div class="flex justify-between items-center mb-4">
               <h3 class="text-xl font-bold text-white">{{ currentQuiz }}</h3>
-              <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
+              <button @click="closeModal" class="text-gray-500 hover:text-gray-700 text-3xl">
                 &times;
               </button>
             </div>
