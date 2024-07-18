@@ -33,10 +33,10 @@
                   <button @click="toggleDropdown(index)" class="text-white hover:text-gray-400">
                     &#8942;
                   </button>
-                  <ul v-if="dropdownOpen === index" class="absolute bg-gray-800 rounded-lg mt-2 shadow-md py-1 w-32">
+                  <ul v-if="dropdownOpen === index" class="absolute bg-gray-800 rounded-lg mt-2 shadow-md py-1 w-32 z-10">
                     <li @click="openModal(quiz.name)" class="text-white px-4 py-2 cursor-pointer hover:bg-gray-700">Tambah Kuis</li>
                     <li class="text-white px-4 py-2 cursor-pointer hover:bg-gray-700">Hapus Kuis</li>
-                  </ul>
+                </ul>
                 </td>
               </tr>
             </tbody>
@@ -94,10 +94,10 @@
         currentQuiz: '', 
         dropdownOpen: -1, 
         quizzes: [
-          { name: 'Matematika', logo: '/assets/matematika.png', numQuizzes: 1, numQuestions: 10 },
-          { name: 'Ilmu Pengetahuan Alam', logo: '/assets/ipa.png', numQuizzes: 1, numQuestions: 10 },
-          { name: 'Ilmu Pengetahuan Sosial', logo: '/assets/ips.png', numQuizzes: 1, numQuestions: 10 },
-          { name: 'Pendidikan Kewarnegaraan', logo: '/assets/pkn.png', numQuizzes: 1, numQuestions: 10 },
+          { name: 'Matematika', logo: 'matematika.png', numQuizzes: 1, numQuestions: 10 },
+          { name: 'Ilmu Pengetahuan Alam', logo: 'ipa.png', numQuizzes: 1, numQuestions: 10 },
+          { name: 'Ilmu Pengetahuan Sosial', logo: 'ips.png', numQuizzes: 1, numQuestions: 10 },
+          { name: 'Pendidikan Kewarnegaraan', logo: 'pkn.png', numQuizzes: 1, numQuestions: 10 },
         ],
       };
     },
