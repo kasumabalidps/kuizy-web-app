@@ -72,6 +72,7 @@
                   <input type="radio" class="mr-2" name="answer" value="4">
                   <input type="text" class="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white" placeholder="Opsi 4">
                 </label>
+                <p class="flex mr-2 text-gray-400 text-sm">Note: Check radio button untuk memilih mana jawaban yang benar</p>
               </div>
             </div>
             <div class="flex justify-between items-center mt-4">
