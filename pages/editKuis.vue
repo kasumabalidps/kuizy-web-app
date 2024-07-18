@@ -34,16 +34,16 @@
                     &#8942;
                   </button>
                   <ul v-if="dropdownOpen === index" class="absolute bg-gray-800 rounded-lg shadow-md w-32 z-10 drop-shadow-md">
-                    <li @click="openModal(quiz.id)" class="text-white px-4 py-2 cursor-pointer hover:bg-gray-900 hover:rounded-md">Tambah Kuis</li>
-                    <li class="text-white px-4 py-2 cursor-pointer hover:bg-gray-900 hover:rounded-md">Hapus Kuis</li>
+                    <li @click="openModal(quiz.id, 'add')" class="text-white px-4 py-2 cursor-pointer hover:bg-gray-900 hover:rounded-md">Tambah Kuis</li>
+                    <li @click="openModal(quiz.id, 'delete')" class="text-white px-4 py-2 cursor-pointer hover:bg-gray-900 hover:rounded-md">Hapus Kuis</li>
                   </ul>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 overflow-y-auto">
-          <!-- alert -->
+
+        <div v-if="isAddModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 overflow-y-auto">
           <transition name="slide-down">
             <div v-if="showError" id="alert-1" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 flex items-center p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
               <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -58,14 +58,11 @@
               </button>
             </div>
           </transition>
-          <!-- alert -->
           <div class="bg-gray-800 rounded-lg p-6 w-[70%] max-h-[75vh] overflow-y-auto relative flex flex-col">
             <div class="flex-grow">
               <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-white uppercase">{{ currentQuiz }}</h3>
-                <button @click="closeModal" class="text-gray-500 hover:text-gray-700 text-3xl">
-                  &times;
-                </button>
+                <button @click="closeModal" class="text-gray-500 hover:text-gray-700 text-3xl">&times;</button>
               </div>
               <input type="text" v-model="newQuizName" class="w-[25%] p-2 border border-gray-500 rounded bg-gray-700 text-white mb-6" placeholder="Nama Quiz">
               <div v-for="(question, index) in questions" :key="index" class="mb-2">
@@ -79,16 +76,34 @@
                 </div>
               </div>
             </div>
-            <div class="p-6 bg-gray-800"> 
+            <div class="p-6 bg-gray-800">
               <div class="flex justify-between items-center">
                 <span class="text-white">Jumlah Soal: {{ questions.length }}</span>
                 <div>
                   <button @click="addQuestion" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-3">Tambah Soal</button>
-                  <button @click="uploadQuiz" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                    Upload Kuis
-                  </button>
+                  <button @click="uploadQuiz" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Upload Kuis</button>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="isDeleteModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 overflow-y-auto">
+          <div class="bg-gray-800 rounded-lg p-6 w-[50%] max-h-[50vh] overflow-y-auto relative flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold text-white">Hapus Kuis</h3>
+              <button @click="closeModal" class="text-gray-500 hover:text-gray-700 text-3xl">&times;</button>
+            </div>
+            <p class="text-white mb-6">Apakah Anda yakin ingin menghapus Kuis <strong>{{ currentQuiz }}</strong>?</p>
+            <div>
+              <label for="quizSelect" class="block text-white mb-2">Pilih Kuis yang ingin dihapus:</label>
+              <select v-model="selectedQuiz" id="quizSelect" class="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white mb-6">
+                <option v-for="(quiz, index) in quizOptions" :key="index" :value="quiz.id">{{ quiz.name }}</option>
+              </select>
+            </div>
+            <div class="flex justify-end">
+              <button @click="closeModal" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 mr-3">Batal</button>
+              <button @click="deleteQuiz" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Hapus</button>
             </div>
           </div>
         </div>
@@ -100,14 +115,15 @@
 <script>
 import { getUsernameFromToken } from '../utils/tokenChecker';
 import { database } from '../utils/firebaseConfig';
-import { ref, get, set } from 'firebase/database';
+import { ref, get, set, remove } from 'firebase/database';
 
 export default {
   data() {
     return {
       currentDate: '',
       newQuizName: '',
-      isModalOpen: false,
+      isAddModalOpen: false,
+      isDeleteModalOpen: false,
       username: 'User',
       currentQuiz: '',
       dropdownOpen: -1,
@@ -117,6 +133,8 @@ export default {
         { id: "ips", name: 'Ilmu Pengetahuan Sosial', logo: 'ips.png', numQuizzes: 0, numQuestions: 0 },
         { id: "ppkn", name: 'Pendidikan Kewarganegaraan', logo: 'pkn.png', numQuizzes: 0, numQuestions: 0 },
       ],
+      quizOptions: [],
+      selectedQuiz: '',
       questions: [],
       showError: false,
       errorMessage: '',
@@ -143,6 +161,12 @@ export default {
               quiz.numQuestions = Object.values(quizzes).reduce((sum, current) => {
                 return sum + Object.keys(current.questions).length;
               }, 0);
+
+              const quizArray = Object.entries(quizzes).map(([id, details]) => ({
+                id: `${quiz.id}/quizzes/${id}`,
+                name: `${details.name}`
+              }));
+              this.quizOptions.push(...quizArray);
             }
           });
         }
@@ -189,6 +213,21 @@ export default {
         this.showError = true;
       }
     },
+    async deleteQuiz() {
+      try {
+        if (!this.selectedQuiz) {
+          throw new Error('Pilih kuis yang ingin dihapus');
+        }
+        const quizRef = ref(database, `/quiz/categories${this.selectedQuiz}`);
+        await remove(quizRef);
+        console.log(`Kuis ${this.selectedQuiz} berhasil dihapus!`);
+        this.closeModal();
+        this.fetchQuizzes();
+      } catch (error) {
+        this.errorMessage = error.message;
+        this.showError = true;
+      }
+    },
     getCurrentDate() {
       const date = new Date();
       const options = {
@@ -198,14 +237,22 @@ export default {
       };
       this.currentDate = date.toLocaleDateString('id-ID', options);
     },
-    openModal(quizId) {
-      this.isModalOpen = true;
+    openModal(quizId, type) {
       this.currentQuiz = quizId;
-      this.questions = [];
-      this.newQuizName = '';
+      if (type === 'add') {
+        this.isAddModalOpen = true;
+        this.isDeleteModalOpen = false;
+        this.questions = [];
+        this.newQuizName = '';
+      } else if (type === 'delete') {
+        this.isAddModalOpen = false;
+        this.isDeleteModalOpen = true;
+        this.selectedQuiz = '';
+      }
     },
     closeModal() {
-      this.isModalOpen = false;
+      this.isAddModalOpen = false;
+      this.isDeleteModalOpen = false;
       this.showError = false;
     },
     toggleDropdown(index) {
@@ -248,3 +295,4 @@ export default {
   opacity: 0;
 }
 </style>
+CELAK DANI KONTOL
