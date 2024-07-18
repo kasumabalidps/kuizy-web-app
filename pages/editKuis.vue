@@ -79,6 +79,8 @@
 </template>
 <script>
 import { getUsernameFromToken } from '../utils/tokenChecker';
+import { database } from '../utils/firebaseConfig';
+import { ref, get } from 'firebase/database';
 
 export default {
   data() {
@@ -89,10 +91,10 @@ export default {
       currentQuiz: '', 
       dropdownOpen: -1, 
       quizzes: [
-        { name: 'Matematika', logo: 'matematika.png', numQuizzes: 1, numQuestions: 10 },
-        { name: 'Ilmu Pengetahuan Alam', logo: 'ipa.png', numQuizzes: 1, numQuestions: 10 },
-        { name: 'Ilmu Pengetahuan Sosial', logo: 'ips.png', numQuizzes: 1, numQuestions: 10 },
-        { name: 'Pendidikan Kewarnegaraan', logo: 'pkn.png', numQuizzes: 1, numQuestions: 10 },
+        { id: "matematika", name: 'Matematika', logo: 'matematika.png', numQuizzes: 0, numQuestions: 0 },
+        { id: "ipa", name: 'Ilmu Pengetahuan Alam', logo: 'ipa.png', numQuizzes: 0, numQuestions: 0 },
+        { id: "ips", name: 'Ilmu Pengetahuan Sosial', logo: 'ips.png', numQuizzes: 0, numQuestions: 0 },
+        { id: "ppkn", name: 'Pendidikan Kewarnegaraan', logo: 'pkn.png', numQuizzes: 0, numQuestions: 0 },
       ],
       questions: [],
     };
@@ -105,6 +107,25 @@ export default {
       } else {
         this.$router.push('/');
       }
+    },
+    fetchQuizzes() {
+      const quizzesRef = ref(database, 'quiz/categories');
+      get(quizzesRef).then(snapshot => {
+        if (snapshot.exists()) {
+          const categories = snapshot.val();
+          this.quizzes.forEach(quiz => {
+            if (categories[quiz.id] && categories[quiz.id].quizzes) {
+              const quizzes = categories[quiz.id].quizzes;
+              quiz.numQuizzes = Object.keys(quizzes).length;
+              quiz.numQuestions = Object.values(quizzes).reduce((sum, current) => {
+                return sum + Object.keys(current.questions).length;
+              }, 0);
+            }
+          });
+        }
+      }).catch(error => {
+        console.error('Error fetching quiz data:', error);
+      });
     },
     getCurrentDate() {
       const date = new Date();
@@ -141,6 +162,7 @@ export default {
     this.getCurrentDate();
     this.checkUserLogin();
     this.loginCheckInterval = setInterval(this.checkUserLogin, 2500);
+    this.fetchQuizzes();
   },
   beforeDestroy() {
     clearInterval(this.loginCheckInterval);
