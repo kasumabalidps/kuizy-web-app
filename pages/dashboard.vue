@@ -70,7 +70,7 @@ export default {
   data() {
     return {
       currentDate: '',
-      username: 'User',
+      username: '',
       users: [],
       recentActivities: [],
       loading: true
@@ -127,6 +127,10 @@ export default {
     this.getCurrentDate();
     this.fetchUsers();
     this.checkUserLogin();
-  }
+    this.loginCheckInterval = setInterval(this.checkUserLogin, 2500);
+  },
+  beforeDestroy() {
+    clearInterval(this.loginCheckInterval);
+  },
 };
 </script>

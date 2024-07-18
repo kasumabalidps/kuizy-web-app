@@ -69,6 +69,7 @@
 <script>
 import { database } from '../utils/firebaseConfig';
 import { ref, get } from 'firebase/database';
+import { getUsernameFromToken } from '../utils/tokenChecker';
 
 export default {
   data() {
@@ -134,6 +135,11 @@ export default {
   mounted() {
     this.getCurrentDate();
     this.fetchUsers();
-  }
+    this.checkUserLogin();
+    this.loginCheckInterval = setInterval(this.checkUserLogin, 2500);
+  },
+  beforeDestroy() {
+    clearInterval(this.loginCheckInterval);
+  },
 };
 </script>

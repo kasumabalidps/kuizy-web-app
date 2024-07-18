@@ -77,6 +77,8 @@
   </div>
 </template>
 <script>
+import { getUsernameFromToken } from '../utils/tokenChecker';
+
 export default {
   data() {
     return {
@@ -136,6 +138,11 @@ export default {
   },
   mounted() {
     this.getCurrentDate();
-  }
+    this.checkUserLogin();
+    this.loginCheckInterval = setInterval(this.checkUserLogin, 2500);
+  },
+  beforeDestroy() {
+    clearInterval(this.loginCheckInterval);
+  },
 };
 </script>
