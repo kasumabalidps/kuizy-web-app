@@ -43,10 +43,26 @@
           </table>
         </div>
         <div v-if="isModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 overflow-y-auto">
+          <!-- alert -->
+          <transition name="slide-down">
+            <div v-if="showError" id="alert-1" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 flex items-center p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 00-2 0v4a1 1 0 002 0V6zm0 6a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+              </svg>
+              {{ errorMessage }}
+              <button @click="showError = false" class="ml-3 -mx-1.5 -my-1.5 bg-red-100 text-red-700 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex h-8 w-8" aria-label="Close">
+                <span class="sr-only">Close</span>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+              </button>
+            </div>
+          </transition>
+          <!-- alert -->
           <div class="bg-gray-800 rounded-lg p-6 w-[70%] max-h-[75vh] overflow-y-auto relative flex flex-col">
             <div class="flex-grow">
               <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-white">{{ currentQuiz }}</h3>
+                <h3 class="text-xl font-bold text-white uppercase">{{ currentQuiz }}</h3>
                 <button @click="closeModal" class="text-gray-500 hover:text-gray-700 text-3xl">
                   &times;
                 </button>
@@ -93,8 +109,8 @@ export default {
       newQuizName: '',
       isModalOpen: false,
       username: 'User',
-      currentQuiz: '', 
-      dropdownOpen: -1, 
+      currentQuiz: '',
+      dropdownOpen: -1,
       quizzes: [
         { id: "matematika", name: 'Matematika', logo: 'matematika.png', numQuizzes: 0, numQuestions: 0 },
         { id: "ipa", name: 'Ilmu Pengetahuan Alam', logo: 'ipa.png', numQuizzes: 0, numQuestions: 0 },
@@ -102,6 +118,8 @@ export default {
         { id: "ppkn", name: 'Pendidikan Kewarganegaraan', logo: 'pkn.png', numQuizzes: 0, numQuestions: 0 },
       ],
       questions: [],
+      showError: false,
+      errorMessage: '',
     };
   },
   methods: {
@@ -129,45 +147,47 @@ export default {
           });
         }
       }).catch(error => {
-        console.error('Error fetching quiz data:', error);
+        console.error('Kesalahan saat mengambil data kuis:', error);
       });
     },
     async uploadQuiz() {
-      const category = this.currentQuiz;
-      const quizRef = ref(database, `quiz/categories/${this.currentQuiz}/quizzes`);
-      const quizSnapshot = await get(quizRef);
-      const quizCount = quizSnapshot.exists() ? Object.keys(quizSnapshot.val()).length + 1 : 1;
-      const quizId = `quiz${quizCount}`;
-      const quizName = this.newQuizName.trim() || `${this.currentQuiz} Quiz ${quizCount}`;
+      try {
+        const category = this.currentQuiz;
+        const quizRef = ref(database, `quiz/categories/${category}/quizzes`);
+        const quizSnapshot = await get(quizRef);
+        const quizCount = quizSnapshot.exists() ? Object.keys(quizSnapshot.val()).length + 1 : 1;
+        const quizId = `quiz${quizCount}`;
+        const quizName = this.newQuizName.trim() || `${category} Kuis ${quizCount}`;
 
-      const newQuiz = {
-        name: quizName,
-        questions: {}
-      };
+        const newQuiz = {
+          name: quizName,
+          questions: {}
+        };
 
-      this.questions.forEach((question, index) => {
-        const questionId = `soal${index + 1}`;
-        if (question.correctAnswer >= 0 && question.options[question.correctAnswer]) {
-          const correctOption = question.options[question.correctAnswer];
-          newQuiz.questions[questionId] = {
-            text: question.questionText,
-            correctAnswer: correctOption.text,
-            option1: question.options[0].text,
-            option2: question.options[1].text,
-            option3: question.options[2].text,
-            option4: question.options[3].text,
-          };
-        } else {
-          throw new Error(`No correct answer selected for question ${index + 1}`);
-        }
-      });
+        this.questions.forEach((question, index) => {
+          const questionId = `soal${index + 1}`;
+          if (question.correctAnswer >= 0 && question.options[question.correctAnswer]) {
+            const correctOption = question.options[question.correctAnswer];
+            newQuiz.questions[questionId] = {
+              text: question.questionText,
+              correctAnswer: correctOption.text,
+              option1: question.options[0].text,
+              option2: question.options[1].text,
+              option3: question.options[2].text,
+              option4: question.options[3].text,
+            };
+          } else {
+            throw new Error(`Tidak ada jawaban yang benar dipilih untuk soal ${index + 1}`);
+          }
+        });
 
-      await set(ref(database, `quiz/categories/${this.currentQuiz}/quizzes/${quizId}`), newQuiz)
-        .then(() => console.log(`${quizName} successfully uploaded!`))
-        .catch(error => console.error(`Failed to upload ${quizName}:`, error));
-
-      this.closeModal();
-      this.newQuizName = '';
+        await set(ref(database, `quiz/categories/${category}/quizzes/${quizId}`), newQuiz);
+        console.log(`Kuis ${quizName} berhasil diunggah!`);
+        this.closeModal();
+      } catch (error) {
+        this.errorMessage = error.message;
+        this.showError = true;
+      }
     },
     getCurrentDate() {
       const date = new Date();
@@ -186,6 +206,7 @@ export default {
     },
     closeModal() {
       this.isModalOpen = false;
+      this.showError = false;
     },
     toggleDropdown(index) {
       if (this.dropdownOpen === index) {
@@ -209,3 +230,21 @@ export default {
   }
 };
 </script>
+
+<style>
+.slide-down-enter-active {
+  transition: all 0.3s ease;
+}
+.slide-down-enter {
+  opacity: 0;
+}
+.slide-down-enter-to {
+  opacity: 1;
+}
+.slide-down-leave-active {
+  transition: opacity 0.3s ease;
+}
+.slide-down-leave-to {
+  opacity: 0;
+}
+</style>
