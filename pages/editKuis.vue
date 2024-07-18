@@ -211,6 +211,9 @@ export default {
         await set(ref(database, `quiz/categories/${category}/quizzes/${quizId}`), newQuiz);
         console.log(`Kuis ${quizName} berhasil diunggah!`);
         this.closeModal();
+        this.$router.push('/editKuis').then(() => {
+          window.location.reload();
+        });
       } catch (error) {
         this.errorMessage = error.message;
         this.showError = true;
