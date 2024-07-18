@@ -87,7 +87,7 @@
             </div>
           </div>
         </div>
-
+        <!-- Delete Quiz -->
         <div v-if="isDeleteModalOpen" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 overflow-y-auto">
           <div class="bg-gray-800 rounded-lg p-6 w-[50%] max-h-[50vh] overflow-y-auto relative flex flex-col">
             <div class="flex justify-between items-center mb-4">
@@ -98,7 +98,7 @@
             <div>
               <label for="quizSelect" class="block text-white mb-2">Pilih Kuis yang ingin dihapus:</label>
               <select v-model="selectedQuiz" id="quizSelect" class="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white mb-6">
-                <option v-for="(quiz, index) in quizOptions" :key="index" :value="quiz.id">{{ quiz.name }}</option>
+                <option v-for="(quiz, index) in filteredQuizzes" :key="index" :value="quiz.id">{{ quiz.name }}</option>
               </select>
             </div>
             <div class="flex justify-end">
@@ -107,6 +107,7 @@
             </div>
           </div>
         </div>
+        <!-- Delete Quiz -->
       </main>
     </div>
   </div>
@@ -138,6 +139,7 @@ export default {
       questions: [],
       showError: false,
       errorMessage: '',
+      filteredQuizzes: [],
     };
   },
   methods: {
@@ -169,6 +171,7 @@ export default {
               this.quizOptions.push(...quizArray);
             }
           });
+          console.log('Opsi Kuis:', this.quizOptions);
         }
       }).catch(error => {
         console.error('Kesalahan saat mengambil data kuis:', error);
@@ -218,14 +221,16 @@ export default {
         if (!this.selectedQuiz) {
           throw new Error('Pilih kuis yang ingin dihapus');
         }
-        const quizRef = ref(database, `/quiz/categories${this.selectedQuiz}`);
+        const quizRef = ref(database, `quiz/categories/${this.selectedQuiz}`);
+        console.log(`Mencoba menghapus kuis di path: ${this.selectedQuiz}`);
         await remove(quizRef);
-        console.log(`Kuis ${this.selectedQuiz} berhasil dihapus!`);
+        console.log(`Kuis berhasil dihapus!`);
         this.closeModal();
         this.fetchQuizzes();
       } catch (error) {
         this.errorMessage = error.message;
         this.showError = true;
+        console.error(`Kesalahan saat menghapus kuis: ${error.message}`);
       }
     },
     getCurrentDate() {
@@ -239,6 +244,9 @@ export default {
     },
     openModal(quizId, type) {
       this.currentQuiz = quizId;
+      const category = quizId.split('/')[0];
+      this.filteredQuizzes = this.quizOptions.filter(q => q.id.startsWith(category));
+      console.log('Kuis yang difilter:', this.filteredQuizzes);
       if (type === 'add') {
         this.isAddModalOpen = true;
         this.isDeleteModalOpen = false;
@@ -295,4 +303,3 @@ export default {
   opacity: 0;
 }
 </style>
-CELAK DANI KONTOL
