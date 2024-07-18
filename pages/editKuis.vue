@@ -106,7 +106,7 @@ export default {
     openModal(quizName) {
       this.isModalOpen = true;
       this.currentQuiz = quizName;
-      this.questions = []; // Reset questions when opening a new modal
+      this.questions = [];
     },
     closeModal() {
       this.isModalOpen = false;
