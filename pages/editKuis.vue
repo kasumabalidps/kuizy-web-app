@@ -11,7 +11,7 @@
       </header>
       <main class="flex-grow bg-gray-900 p-6 rounded-lg shadow-lg">
         <div class="overflow-x-auto relative rounded-xl drop-shadow-md mt-8">
-          <p class="text-xl text-white mb-2 ml-2 font-bold">Pilihan Kuis</p>
+          <p class="text-white text-2xl font-bold mb-4">Pilihan Kuis</p>
           <table class="w-full text-sm text-left text-gray-400">
             <thead class="text-xs text-white uppercase bg-gray-800">
               <tr>
@@ -58,6 +58,7 @@
                     <input type="radio" class="mr-2" :name="'answer-' + index" :value="oIndex">
                     <input v-model="option.text" type="text" class="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white" :placeholder="'Opsi ' + (oIndex + 1)">
                   </label>
+                  <p class="text-gray-400">Note: Check Radio Box untuk memilih jawaban yang benar pada opsi di atas</p>
                 </div>
               </div>
             </div>
