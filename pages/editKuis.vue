@@ -33,9 +33,9 @@
                   <button @click="toggleDropdown(index)" class="text-white hover:text-gray-400">
                     &#8942;
                   </button>
-                  <ul v-if="dropdownOpen === index" class="absolute bg-gray-800 rounded-lg mt-2 shadow-md py-1 w-32 z-10">
-                    <li @click="openModal(quiz.name)" class="text-white px-4 py-2 cursor-pointer hover:bg-gray-700">Tambah Kuis</li>
-                    <li class="text-white px-4 py-2 cursor-pointer hover:bg-gray-700">Hapus Kuis</li>
+                  <ul v-if="dropdownOpen === index" class="absolute bg-gray-800 rounded-lg shadow-md w-32 z-10 drop-shadow-md">
+                    <li @click="openModal(quiz.name)" class="text-white px-4 py-2 cursor-pointer hover: hover:bg-gray-900 hover:rounded-md">Tambah Kuis</li>
+                    <li class="text-white px-4 py-2 cursor-pointer hover:bg-gray-900 hover:rounded-md">Hapus Kuis</li>
                   </ul>
                 </td>
               </tr>
