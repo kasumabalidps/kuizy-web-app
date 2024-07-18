@@ -34,7 +34,7 @@
                     &#8942;
                   </button>
                   <ul v-if="dropdownOpen === index" class="absolute bg-gray-800 rounded-lg shadow-md w-32 z-10 drop-shadow-md">
-                    <li @click="openModal(quiz.name)" class="text-white px-4 py-2 cursor-pointer hover: hover:bg-gray-900 hover:rounded-md">Tambah Kuis</li>
+                    <li @click="openModal(quiz.id)" class="text-white px-4 py-2 cursor-pointer hover:bg-gray-900 hover:rounded-md">Tambah Kuis</li>
                     <li class="text-white px-4 py-2 cursor-pointer hover:bg-gray-900 hover:rounded-md">Hapus Kuis</li>
                   </ul>
                 </td>
@@ -51,11 +51,12 @@
                   &times;
                 </button>
               </div>
+              <input type="text" v-model="newQuizName" class="w-[25%] p-2 border border-gray-500 rounded bg-gray-700 text-white mb-6" placeholder="Nama Quiz">
               <div v-for="(question, index) in questions" :key="index" class="mb-2">
                 <input v-model="question.questionText" type="text" class="w-full p-2 border border-gray-500 rounded mt-2 bg-gray-700 text-white" placeholder="Masukkan Soal">
                 <div class="flex flex-col space-y-2 mt-2">
                   <label class="flex items-center" v-for="(option, oIndex) in question.options" :key="oIndex">
-                    <input type="radio" class="mr-2" :name="'answer-' + index" :value="oIndex">
+                    <input type="radio" class="mr-2" :name="'answer-' + index" :value="oIndex" v-model="question.correctAnswer">
                     <input v-model="option.text" type="text" class="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white" :placeholder="'Opsi ' + (oIndex + 1)">
                   </label>
                   <p class="text-gray-400">Note: Check Radio Box untuk memilih jawaban yang benar pada opsi di atas</p>
@@ -67,7 +68,9 @@
                 <span class="text-white">Jumlah Soal: {{ questions.length }}</span>
                 <div>
                   <button @click="addQuestion" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-3">Tambah Soal</button>
-                  <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Upload Kuis</button>
+                  <button @click="uploadQuiz" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    Upload Kuis
+                  </button>
                 </div>
               </div>
             </div>
@@ -77,15 +80,17 @@
     </div>
   </div>
 </template>
+
 <script>
 import { getUsernameFromToken } from '../utils/tokenChecker';
 import { database } from '../utils/firebaseConfig';
-import { ref, get } from 'firebase/database';
+import { ref, get, set } from 'firebase/database';
 
 export default {
   data() {
     return {
       currentDate: '',
+      newQuizName: '',
       isModalOpen: false,
       username: 'User',
       currentQuiz: '', 
@@ -94,7 +99,7 @@ export default {
         { id: "matematika", name: 'Matematika', logo: 'matematika.png', numQuizzes: 0, numQuestions: 0 },
         { id: "ipa", name: 'Ilmu Pengetahuan Alam', logo: 'ipa.png', numQuizzes: 0, numQuestions: 0 },
         { id: "ips", name: 'Ilmu Pengetahuan Sosial', logo: 'ips.png', numQuizzes: 0, numQuestions: 0 },
-        { id: "ppkn", name: 'Pendidikan Kewarnegaraan', logo: 'pkn.png', numQuizzes: 0, numQuestions: 0 },
+        { id: "ppkn", name: 'Pendidikan Kewarganegaraan', logo: 'pkn.png', numQuizzes: 0, numQuestions: 0 },
       ],
       questions: [],
     };
@@ -127,6 +132,43 @@ export default {
         console.error('Error fetching quiz data:', error);
       });
     },
+    async uploadQuiz() {
+      const category = this.currentQuiz;
+      const quizRef = ref(database, `quiz/categories/${this.currentQuiz}/quizzes`);
+      const quizSnapshot = await get(quizRef);
+      const quizCount = quizSnapshot.exists() ? Object.keys(quizSnapshot.val()).length + 1 : 1;
+      const quizId = `quiz${quizCount}`;
+      const quizName = this.newQuizName.trim() || `${this.currentQuiz} Quiz ${quizCount}`;
+
+      const newQuiz = {
+        name: quizName,
+        questions: {}
+      };
+
+      this.questions.forEach((question, index) => {
+        const questionId = `soal${index + 1}`;
+        if (question.correctAnswer >= 0 && question.options[question.correctAnswer]) {
+          const correctOption = question.options[question.correctAnswer];
+          newQuiz.questions[questionId] = {
+            text: question.questionText,
+            correctAnswer: correctOption.text,
+            option1: question.options[0].text,
+            option2: question.options[1].text,
+            option3: question.options[2].text,
+            option4: question.options[3].text,
+          };
+        } else {
+          throw new Error(`No correct answer selected for question ${index + 1}`);
+        }
+      });
+
+      await set(ref(database, `quiz/categories/${this.currentQuiz}/quizzes/${quizId}`), newQuiz)
+        .then(() => console.log(`${quizName} successfully uploaded!`))
+        .catch(error => console.error(`Failed to upload ${quizName}:`, error));
+
+      this.closeModal();
+      this.newQuizName = '';
+    },
     getCurrentDate() {
       const date = new Date();
       const options = {
@@ -136,36 +178,34 @@ export default {
       };
       this.currentDate = date.toLocaleDateString('id-ID', options);
     },
-    openModal(quizName) {
+    openModal(quizId) {
       this.isModalOpen = true;
-      this.currentQuiz = quizName;
+      this.currentQuiz = quizId;
       this.questions = [];
+      this.newQuizName = '';
     },
     closeModal() {
       this.isModalOpen = false;
     },
     toggleDropdown(index) {
       if (this.dropdownOpen === index) {
-        this.dropdownOpen = -1; 
+        this.dropdownOpen = -1;
       } else {
-        this.dropdownOpen = index; 
+        this.dropdownOpen = index;
       }
     },
     addQuestion() {
       this.questions.push({
         questionText: "",
-        options: [{text: ""}, {text: ""}, {text: ""}, {text: ""}]
+        options: [{text: ""}, {text: ""}, {text: ""}, {text: ""}],
+        correctAnswer: -1
       });
     },
   },
   mounted() {
     this.getCurrentDate();
     this.checkUserLogin();
-    this.loginCheckInterval = setInterval(this.checkUserLogin, 2500);
     this.fetchQuizzes();
-  },
-  beforeDestroy() {
-    clearInterval(this.loginCheckInterval);
-  },
+  }
 };
 </script>
