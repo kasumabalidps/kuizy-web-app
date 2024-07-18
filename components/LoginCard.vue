@@ -36,7 +36,7 @@ export default {
   methods: {
     async login() {
       const sanitizedUsername = this.username.replace(/[.#$[\]]/g, '');
-      const userRef = ref(database, 'users/' + sanitizedUsername);
+      const userRef = ref(database, 'pengajar/' + sanitizedUsername);
       try {
         const snapshot = await get(userRef);
         if (snapshot.exists()) {

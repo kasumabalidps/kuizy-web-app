@@ -4,7 +4,7 @@ import { ref, get } from 'firebase/database';
 export async function getUsernameFromToken() {
   const localToken = localStorage.getItem('authToken');
   if (localToken) {
-    const usersRef = ref(database, 'users/');
+    const usersRef = ref(database, 'pengajar/');
     try {
       const snapshot = await get(usersRef);
       if (snapshot.exists()) {
