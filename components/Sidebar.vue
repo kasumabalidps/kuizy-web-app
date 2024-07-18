@@ -18,7 +18,7 @@
           </li>
 
           <li class="mb-2">
-            <nuxt-link to="/editKuis" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold" :class="{ active: $route.path === '/editKuis' }">
+            <nuxt-link to="editKuis" class="py-2 px-4 rounded-lg mb-2 flex items-center hover:bg-gray-700 font-bold" :class="{ active: $route.path === '/editKuis' }">
               <img src="/assets/editKuis.png" alt="Edit Kuis Icon" class="ml-2 h-4 w-4">
               <span class="ml-2 font-bold">Edit Kuis</span>
             </nuxt-link>
