@@ -230,6 +230,9 @@ export default {
         console.log(`Kuis berhasil dihapus!`);
         this.closeModal();
         this.fetchQuizzes();
+        this.$router.push('/editKuis').then(() => {
+          window.location.reload();
+        });
       } catch (error) {
         this.errorMessage = error.message;
         this.showError = true;
